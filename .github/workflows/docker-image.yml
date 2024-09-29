@@ -32,4 +32,4 @@ jobs:
     # Step 4: Push Docker image to Docker Hub
     - name: Push Docker image
       run: |
-        docker push mydockerhub/pedagangpulsa:latest
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/pedagangpulsa:latest
