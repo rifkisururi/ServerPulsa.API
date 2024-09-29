@@ -3,10 +3,10 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - main  # Ini akan berjalan ketika ada push ke branch "main"
+      - master  # Ini akan berjalan ketika ada push ke branch "main"
   pull_request:
     branches:
-      - main  # Ini akan berjalan ketika ada pull request ke branch "main"
+      - master  # Ini akan berjalan ketika ada pull request ke branch "main"
 
 jobs:
   build:
