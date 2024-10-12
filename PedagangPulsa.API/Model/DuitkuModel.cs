@@ -32,18 +32,18 @@
     {
         public string merchantCode { get; set; }
         public int amount { get; set; }
-        public string merchantOrderId { get; set; }
-        public string productDetail { get; set; }
+        public string? merchantOrderId { get; set; }
+        public string? productDetail { get; set; }
         public string? additionalParam { get; set; }
-        public string paymentCode { get; set; }
-        public string resultCode { get; set; }
+        public string? paymentCode { get; set; }
+        public string? resultCode { get; set; }
         public string? merchantUserId { get; set; }
-        public string reference { get; set; }
-        public string signature { get; set; }
-        public string publisherOrderId { get; set; }
-        public string spUserHash { get; set; }
-        public string settlementDate { get; set; }
-        public string issuerCode { get; set; }
+        public string? reference { get; set; }
+        public string? signature { get; set; }
+        public string? publisherOrderId { get; set; }
+        public string? spUserHash { get; set; }
+        public string? settlementDate { get; set; }
+        public string? issuerCode { get; set; }
     }
 
 }

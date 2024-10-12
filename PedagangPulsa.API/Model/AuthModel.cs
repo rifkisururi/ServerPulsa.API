@@ -36,7 +36,7 @@ namespace PedagangPulsa.API.Model
         public string Telegram { get; set; }
         [Required]
         [MinLength(6, ErrorMessage = "Pin Transaksi must be at least 6 characters long.")]
-        public int PinTransaksi { get; set; } = 0;
+        public string PinTransaksi { get; set; } = "000000";
         
     }
 

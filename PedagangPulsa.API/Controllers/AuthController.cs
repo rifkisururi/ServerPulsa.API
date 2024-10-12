@@ -124,7 +124,13 @@ namespace PedagangPulsa.API.Controllers
             var user = new User
             {
                 Username = model.Username,
-                PasswordHash = hashedPassword
+                PasswordHash = hashedPassword,
+                NamaLengkap = model.NamaLengkap,
+                Alamat = model.Alamat,
+                NoWA = model.NoWA,
+                Email = model.Email,
+                Telegram = model.Telegram,
+                PinTransaksi = model.PinTransaksi,
             };
 
             // Simpan user ke database

@@ -1,0 +1,86 @@
+/* Custom styles */
+.offcanvas-header {
+    background-color: #343a40;
+    color: white;
+}
+
+.offcanvas-body {
+    padding: 0;
+}
+
+.offcanvas-body .nav-item {
+    padding: 10px 15px;
+}
+
+.offcanvas-body .nav-link {
+    font-size: 16px;
+    color: #000;
+}
+
+.offcanvas-body .nav-link i {
+    margin-right: 10px;
+}
+
+/* Custom styles for the header section */
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.balance-section {
+    color: white;
+    background-color: var(--primary-color);
+}
+
+
+/* Styling for banner section */
+.banner img {
+    width: 100%;
+    border-radius: 10px;
+}
+
+/* Styling for icons grid */
+.category-icons .icon-box {
+    text-align: center;
+    padding: 10px;
+}
+
+.category-icons .icon-box img {
+    width: 40px;
+}
+
+.category-icons .icon-box p {
+    margin-top: 5px;
+    font-size: 14px;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+.navbar-dark .navbar-toggler {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.icon-categories {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 0 10px;
+}
+
+.icon-categories div {
+    width: 24%;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.icon-categories i {
+    font-size: 28px;
+    display: block;
+    margin-bottom: 5px;
+}

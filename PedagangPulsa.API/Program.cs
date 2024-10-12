@@ -79,9 +79,9 @@ builder.Services.AddScoped<IProdukService, ProdukService>();
 builder.Services.AddScoped<ITransaksiService ,TransaksiService>();
 builder.Services.AddScoped<IDuitkuService, DuitkuService>();
 builder.Services.AddHttpClient<ProdukService>();
-//services.AddHttpClient<IDuitkuService, DuitkuService>();
 
-
+// Tambahkan konfigurasi MQTT service
+builder.Services.AddSingleton<MqttService>();
 
 var app = builder.Build();
 
@@ -90,6 +90,17 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+
+// Membuat database secara otomatis jika belum ada
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    // Pastikan bahwa database sudah ada, jika tidak akan dibuat
+    dbContext.Database.EnsureCreated();
+    // Alternatif menggunakan migrasi jika menggunakan migration (lebih dianjurkan untuk produksi)
+    // dbContext.Database.Migrate();
 }
 
 app.UseHttpsRedirection();

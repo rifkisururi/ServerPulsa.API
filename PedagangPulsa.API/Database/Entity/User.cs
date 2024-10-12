@@ -4,6 +4,7 @@ namespace PedagangPulsa.API.Database.Entity
 {
     public class User
     {
+        [Key]
         public int Id { get; set; }
         public string Username { get; set; }
         public string? PasswordHash { get; set; }
@@ -18,7 +19,7 @@ namespace PedagangPulsa.API.Database.Entity
         public string LastOTP { get; set; } = "000000";
         public int Saldo { get; set; } = 0;
         public int IsVerived { get; set; } = 0;
-        public DateTime Register { get; set; }
+        public DateTime Register { get; set; } = DateTime.Now;
         public DateTime LastTransaksi { get; set; } = DateTime.Now;
     }
 

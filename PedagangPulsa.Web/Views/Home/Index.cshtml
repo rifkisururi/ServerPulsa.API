@@ -1,0 +1,101 @@
+﻿@{
+    Layout = "_LayoutHome";
+    ViewData["Title"] = "Home Page";
+}
+@* <div class="text-center">
+    <h1 class="display-4">Selamat datang</h1>
+    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">Kami menjual produk produk berikut</a>.</p>
+
+</div>
+<div class="text-center">
+    <a href="Transaksi/Kategori?katergory=PULSA"><h1 class="display-4">Pulsa</h1></a>
+    <a href="Transaksi/Kategori?katergory=Data"><h1 class="display-4">DATA</h1></a>
+    <a href="Transaksi/Kategori?katergory=TOKEN"><h1 class="display-4">Token PLN</h1></a>
+</div> *@
+
+<!-- Banner Section -->
+
+<div id="carouselExampleIndicators"
+     class="carousel slide"
+     data-bs-ride="carousel">
+    <div class="carousel-indicators">
+        <button type="button"
+                data-bs-target="#carouselExampleIndicators"
+                data-bs-slide-to="0"
+                class="active"
+                aria-current="true"
+                aria-label="Slide 1"></button>
+        <button type="button"
+                data-bs-target="#carouselExampleIndicators"
+                data-bs-slide-to="1"
+                aria-label="Slide 2"></button>
+    </div>
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <img src="https://upulsa.com/assets/banner/xl.png"
+                 class="d-block w-100"
+                 alt="..." />
+        </div>
+        <div class="carousel-item">
+            <img src="https://upulsa.com/assets/banner/honorofkings.png"
+                 class="d-block w-100"
+                 alt="..." />
+        </div>
+    </div>
+    <button class="carousel-control-prev"
+            type="button"
+            data-bs-target="#carouselExampleIndicators"
+            data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next"
+            type="button"
+            data-bs-target="#carouselExampleIndicators"
+            data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+
+<!-- Category Section -->
+<div class="container my-3">
+    <h5>Kategori</h5>
+    
+    <div class="row text-center category-icons">
+        <div class="col-3 icon-box"
+                 onclick="window.location.href='/Transaksi/Kategori?katergory=PULSA'">
+            <i class="fas fa-mobile-alt fa-2x"></i>
+            <p>Pulsa</p>
+        </div>
+        <div class="col-3 icon-box">
+            <i class="fas fa-car fa-2x"></i>
+            <p>MAXIM</p>
+        </div>
+        <div class="col-3 icon-box">
+            <i class="fas fa-motorcycle fa-2x"></i>
+            <p>Gojek</p>
+        </div>
+        <div class="col-3 icon-box">
+            <i class="fas fa-taxi fa-2x"></i>
+            <p>Grab</p>
+        </div>
+        <!-- Additional icons -->
+        <div class="col-3 icon-box">
+            <i class="fas fa-gamepad fa-2x"></i>
+            <p>ML</p>
+        </div>
+        <div class="col-3 icon-box">
+            <i class="fas fa-fire fa-2x"></i>
+            <p>FF</p>
+        </div>
+        <div class="col-3 icon-box">
+            <i class="fas fa-sim-card fa-2x"></i>
+            <p>Telkomsel</p>
+        </div>
+        <div class="col-3 icon-box">
+            <i class="fas fa-sim-card fa-2x"></i>
+            <p>XL</p>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,91 @@
+﻿@model List<PedagangPulsa.Web.Controllers.ProdukDto>
+@{
+    ViewData["Title"] = "Detail Produk";
+}
+<script src="~/javascript/order.js"></script>
+
+<h2>Detail Produk</h2>
+
+<!-- Input Kolom Tujuan -->
+<form id="tujuanForm">
+    @Html.AntiForgeryToken()
+    <div class="form-group">
+        <label for="tujuan">Tujuan:</label>
+        <input type="text" class="form-control" id="tujuan" name="tujuan" placeholder="Masukkan nomor tujuan" required />
+    </div>
+</form>
+
+@if (Model != null && Model.Count > 0)
+{
+    <table class="table table-bordered mt-4">
+        <thead>
+            <tr>
+                @* <th>Operator ID</th>
+                <th>Kode Produk</th> *@
+                <th>Nama Produk</th>
+                <th>Deskripsi Produk</th>
+                <th>Harga</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in Model)
+            {
+                <tr onclick="postToPayment('@product.operator_Id', '@product.kode')">
+                    @* <td>@product.operator_Id</td>
+                    <td>@product.kode</td> *@
+                    <td>@product.nama_Produk</td>
+                    <td>@product.deskripsi_produk</td>
+                    <td>Rp @product.harga.ToString("N0")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No products found for the selected operator.</p>
+}
+
+<script>
+    function postToPayment(operatorId, kode) {
+        // Mengambil nomor tujuan dari input
+        var tujuan = document.getElementById("tujuan").value;
+
+        // Validasi input tujuan sebelum mengirimkan data
+        if (!tujuan) {
+            alert("Masukkan nomor tujuan terlebih dahulu.");
+            return;
+        }
+
+        // Menyiapkan data untuk dikirim
+        var data = {
+            operator_Id: operatorId,
+            kode: kode,
+            no_tujuan: tujuan
+        };
+
+        // Mengirim data ke server menggunakan AJAX
+        fetch('@Url.Action("Payment", "Transaksi")', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    alert("Pembayaran berhasil diproses. trx id" + result.trx_id);
+                    // Redirect ke halaman transaksi/history dengan trx_id
+                    window.location.href = '/Transaksi/History?id=' + result.trx_id;
+                } else {
+                    alert("Pembayaran gagal: " + result.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("Terjadi kesalahan saat memproses pembayaran.");
+            });
+    }
+</script>

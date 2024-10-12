@@ -1,0 +1,38 @@
+body {
+    background-color: var(--primary-color);
+}
+
+.card {
+    background-color: #fff;
+    border: none;
+    border-radius: 10px;
+}
+
+h2 {
+    font-weight: bold;
+}
+
+.btn-dark {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-outline-dark {
+    border-color: #fff;
+}
+
+.input-group-text {
+    border: none;
+    background-color: #f8f9fa;
+}
+
+.form-control {
+    border: none;
+    border-radius: 0;
+    background-color: #f8f9fa;
+    padding-left: 0;
+}
+
+input:focus {
+    box-shadow: none;
+}

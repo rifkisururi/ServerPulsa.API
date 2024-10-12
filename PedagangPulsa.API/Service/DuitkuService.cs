@@ -16,6 +16,7 @@ namespace PedagangPulsa.API.Service
         private string _paymentMethod;
         private string _callback;
         private string _returnUrl;
+        private string _prefixTrx;
 
         public DuitkuService(HttpClient httpClient, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
         {
@@ -27,6 +28,7 @@ namespace PedagangPulsa.API.Service
             _paymentMethod  = _configuration["Duitku:paymentMethod"];
             _callback       = _configuration["Duitku:callbackUrl"];
             _returnUrl = _configuration["Duitku:returnUrl"];
+            _prefixTrx = _configuration["Duitku:prefix"];
         }
 
         public async Task<DuitkuInquiryResponse> CreatePaymentRequestAsync(DuitkuPaymentRequest request)
@@ -37,7 +39,7 @@ namespace PedagangPulsa.API.Service
             request.MerchantCode = _merchantCode;
             request.PaymentAmount = request.PaymentAmount; // Default to 20000 if not provided
             request.PaymentMethod = _paymentMethod;
-            request.MerchantOrderId = "PP"+ request.MerchantOrderId; // Generate a unique order ID if not provided
+            request.MerchantOrderId = _prefixTrx + request.MerchantOrderId; // Generate a unique order ID if not provided
             request.ProductDetails = request.ProductDetails;
             request.AdditionalParam =  "";
             request.MerchantUserInfo = "";
@@ -68,9 +70,19 @@ namespace PedagangPulsa.API.Service
 
             return null;
         }
-        public string generateSignature(string merchantCode, string merchantOrderId, int paymentAmount) {
+        public string generateSignature(string merchantCode, string merchantOrderId, int paymentAmount)
+        {
+            // MD5(merchantCode + merchantOrderId + paymentAmount + apiKey)
             return GenerateMD5Hash(merchantCode + merchantOrderId + paymentAmount + _apiKey);
         }
+        public string generateSignatureCallback(string merchantCode, string merchantOrderId, int paymentAmount)
+        {
+            //merchantcode + amount + merchantOrderId + apiKey
+            return GenerateMD5Hash(merchantCode + paymentAmount + merchantOrderId + _apiKey);
+        }
+
+        
+            
         private static string GenerateMD5Hash(string input)
         {
             // Convert the input string to a byte array and compute the hash.

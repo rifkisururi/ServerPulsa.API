@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using Dapper;
+using Microsoft.Data.Sqlite;
 using Newtonsoft.Json.Linq;
 using PedagangPulsa.API.Interface;
 using PedagangPulsa.API.Model;
@@ -37,6 +38,8 @@ namespace PedagangPulsa.API.Service
             using (var connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();
+                string queryDelete = @"DELETE from Produk where Vendor = 'DFLASH';";
+                connection.Execute(queryDelete);
 
                 foreach (var item in jsonData)
                 {
@@ -58,8 +61,19 @@ namespace PedagangPulsa.API.Service
                     }
                 }
 
+                string queryInsert = @"
+                insert into Produk
+                SELECT 'DFLASH',Kode, kp.KategoriID , kp.Kategori , kp.Provider , dp.Nama , '', dp.Harga , dp.Status 
+                from 
+	                DetailProduk dp
+	                INNER JOIN KategoriProduk kp ON dp.KategoriID  = kp.KategoriID ";
+                connection.Execute(queryInsert);
                 connection.Close();
             }
+
+            
+
+
         }
 
         // Insert atau Update manual produk

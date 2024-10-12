@@ -5,7 +5,7 @@ namespace PedagangPulsa.API.Database.Entity
     public class Transaksi
     {
         [Key]
-        public int Id { get; set; }                   // ID transaksi
+        public int id { get; set; }                   // ID transaksi
         public int IdUser { get; set; }               // ID user yang melakukan transaksi
         public string kode { get; set; }               // Kode produk
         public int id_vendor { get; set; }             // ID vendor penyedia produk

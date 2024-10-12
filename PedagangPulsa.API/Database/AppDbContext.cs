@@ -8,13 +8,11 @@ namespace PedagangPulsa.API.Database
         public DbSet<User> Users { get; set; }
         public DbSet<Produk> Produk  { get; set; }
         public DbSet<Transaksi> Transaksi { get; set; }
-
+        public DbSet<KategoriProduk> KategoriProduk { get; set; }
+        public DbSet<DetailProduk> DetailProduk { get; set; }
+        public DbSet<CallbackPaymentDuitku> CallbackPaymentDuitku { get; set; }
+        
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlite("Data Source=Database/PedagangPulsa.db");
-        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

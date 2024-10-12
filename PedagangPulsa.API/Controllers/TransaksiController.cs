@@ -9,6 +9,7 @@ using PedagangPulsa.API.Interface;
 using PedagangPulsa.API.Model;
 using PedagangPulsa.API.Service;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text.Json;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
@@ -27,8 +28,10 @@ namespace PedagangPulsa.API.Controllers
         private readonly TokenService _tokenService;
         private readonly ITransaksiService _trxSvc;
         private readonly IDuitkuService _duitkuService; 
-        private readonly ILogger<TransaksiController> _logger;
-        public TransaksiController(IProdukService produkService, AppDbContext context, TokenService tokenService, ITransaksiService trxSvc, IDuitkuService duitkuService, ILogger<TransaksiController> logger)
+        private readonly ILogger<TransaksiController> _logger; 
+        private readonly MqttService _mqttService;
+
+        public TransaksiController(IProdukService produkService, AppDbContext context, TokenService tokenService, ITransaksiService trxSvc, IDuitkuService duitkuService, ILogger<TransaksiController> logger, MqttService mqttService)
         {
             _produkService = produkService;
             _connectionString = context.Database.GetDbConnection().ConnectionString; // Ambil connection string dari context
@@ -36,7 +39,9 @@ namespace PedagangPulsa.API.Controllers
             _tokenService = tokenService;
             _trxSvc = trxSvc;
             _duitkuService = duitkuService;
-            _logger = logger;
+            _logger = logger; 
+            _mqttService = mqttService;
+
         }
 
         [HttpGet("saldo-supliyer/{supliyer}")]
@@ -130,12 +135,6 @@ namespace PedagangPulsa.API.Controllers
         {
             var user = HttpContext.User;
 
-            // Menggunakan service untuk validasi token
-            if (!_tokenService.ValidateTokenExpiration(user, out var userId, out var username, out var token, out var expirationClaim))
-            {
-                return Unauthorized(new { Message = "Data tidak valid atau token kadaluwarsa" });
-            }
-
             var dtProduk = await _context.Produk.SingleOrDefaultAsync(x => x.Kode == model.kode && x.kategory_Id == model.operator_Id);
             if (dtProduk == null)
             {
@@ -150,12 +149,18 @@ namespace PedagangPulsa.API.Controllers
                 using (var connection = new SqliteConnection(_connectionString))
                 {
                     string query = @"
-                    INSERT INTO Transaksi (id_user, id_vendor, kode, nama_produk, harga_agen, status_transaksi, no_tujuan)
-                    SELECT @userId, p.vendor, p.kode, p.nama_produk, p.harga, 'Draft', @tujuan
+                    INSERT INTO Transaksi (IdUser, id_vendor, kode, nama_produk, harga_agen, status_transaksi, no_tujuan, TanggalTransaksi)
+                    SELECT @userId, p.vendor, p.kode, p.nama_produk, p.harga, 'Draft', @tujuan, @datenow
                     FROM produk p 
                     WHERE p.kategory_Id = @Operator AND p.kode = @kode;
 
                     SELECT last_insert_rowid() AS Id;";
+
+                    // Menggunakan service untuk validasi token
+                    if (!_tokenService.ValidateTokenExpiration(user, out var userId, out var username, out var token, out var expirationClaim))
+                    {
+                        userId = "0";
+                    }
 
                     // Execute the query and fetch the last inserted row ID
                     var lastInsertedId = await connection.QuerySingleAsync<int>(query, new
@@ -163,14 +168,14 @@ namespace PedagangPulsa.API.Controllers
                         Operator = model.operator_Id,
                         kode = model.kode,
                         userId = userId,
-                        tujuan = model.no_tujuan
+                        tujuan = model.no_tujuan,
+                        datenow = DateTime.Now,
                     });
-
-                    // Return the last inserted ID in the response
+                    // Return response JSON dengan format standar
                     return Ok(new
                     {
-                        Message = "Insert successful",
-                        LastInsertedId = lastInsertedId
+                        status = "Success",
+                        trx_id = lastInsertedId
                     });
                 }
             }
@@ -182,7 +187,7 @@ namespace PedagangPulsa.API.Controllers
             using (var connection = new SqliteConnection(_connectionString))
             {
                 string query = @"
-                    SELECT t.kode, t.nama_produk, harga_agen, p.deskripsi_produk, no_tujuan 
+                    SELECT t.kode, t.nama_produk, harga_agen, p.deskripsi_produk, no_tujuan , t.id
                     FROM Transaksi t
                     INNER JOIN produk p ON t.id_vendor = p.vendor AND t.kode = p.kode 
                     WHERE t.id = @trxId ;";
@@ -209,7 +214,18 @@ namespace PedagangPulsa.API.Controllers
             }
         }
 
-       
+
+        [HttpGet("mqtt/{message}")]
+        public async Task<IActionResult> mqtt(string message)
+        {
+            string topic = "trxid7";
+            await _mqttService.PublishMessageAsync(topic, message);
+
+            return Ok(new { Status = "Message Published", Topic = topic, Message = message });
+        }
+
+
+
         [HttpPost("callback")]
         public async Task<IActionResult> ReceiveCallback([FromForm] DuitkuCallbackRequest callbackRequest)
         {
@@ -217,8 +233,7 @@ namespace PedagangPulsa.API.Controllers
             _logger.LogInformation($"Received callback for MerchantOrderId: {callbackRequest.merchantOrderId}");
 
             // Calculate the expected signature for security validation
-            //var calculatedSignature = CalculateSignature(callbackRequest.merchantCode, callbackRequest.amount, callbackRequest.merchantOrderId);
-            var calculatedSignature = _duitkuService.generateSignature(callbackRequest.merchantCode, callbackRequest.merchantOrderId, callbackRequest.amount);
+            var calculatedSignature = _duitkuService.generateSignatureCallback(callbackRequest.merchantCode, callbackRequest.merchantOrderId, callbackRequest.amount);
 
             // Validate the signature
             if (calculatedSignature != callbackRequest.signature)
@@ -234,7 +249,13 @@ namespace PedagangPulsa.API.Controllers
                 _logger.LogInformation($"Transaction successful for MerchantOrderId: {callbackRequest.merchantOrderId}");
                 OrderSumit model = new OrderSumit();
                 model.trx_id = Convert.ToInt16(callbackRequest.merchantOrderId.Replace("PP", ""));
-                await _trxSvc.SendTransaksi(model);
+
+                string topic = "trxid"+ model.trx_id;  // Ganti dengan topik yang sesuai
+                string message = "paid";
+                await _mqttService.PublishMessageAsync(topic, message);
+
+                return Ok(new { Status = "Message Published", Topic = topic, Message = message });
+                //await _trxSvc.SendTransaksi(model);
             }
             else
             {

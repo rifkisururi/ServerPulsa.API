@@ -1,0 +1,28 @@
+.card {
+    background-color: var(--primary-color);
+    border: none;
+    color: white;
+    border-radius: 10px;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+}
+
+.nav-link.active {
+    font-weight: bold;
+    border-bottom: 2px solid #000;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+
+.navbar p {
+    margin: 0;
+    font-size: 12px;
+}
+
+.navbar .text-center {
+    font-size: 20px;
+}

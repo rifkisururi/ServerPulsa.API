@@ -1,0 +1,74 @@
+﻿@model PedagangPulsa.Web.Controllers.TransaksiDetailResponse
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Transaksi ";
+}
+
+@if (Model != null && Model.status == "Success")
+{
+    <div class="container my-4">
+        <div class="card shadow-sm p-4 mb-4" style="border-radius: 10px">
+            <h6 class="text-center mb-3">Rincian Transaksi ID: @Model.data.id</h6>
+            <div class="d-flex justify-content-between mb-2">
+                <span>Tanggal</span><span>@Model.data.tanggal_transaksi</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span>Kode Produk</span><span>@Model.data.kode</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span>Nama Produk</span><span>@Model.data.nama_produk</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span>Nomor Tujuan</span><span>@Model.data.no_tujuan</span>
+            </div>
+            <hr />
+            <div class="d-flex justify-content-between">
+                <span>Harga</span><span>Rp @Model.data.harga_agen.ToString("N0")</span>
+            </div>
+        </div>
+
+        <!-- QR Code and Payment Information -->
+        <div class="card shadow-sm p-4" style="border-radius: 10px">
+            <div class="text-center">
+                <h2 style="font-weight: bold">QRIS</h2>
+                <div id="qrcode"></div>
+                <img src="https://png.pngtree.com/png-vector/20230714/ourlarge/pngtree-keel-stamp-grunge-effect-design-stamp-thank-you-vector-free-download-png-image_7506535.png" width="256" height="256" alt="Lunas" id="lunas">
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span>Jumlah Transaksi</span><span>Rp @Model.data.harga_agen.ToString("N0")</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span>Casback koin</span><span>0</span>
+            </div>
+            <div class="d-flex justify-content-between">
+
+                
+                <span>Petunjuk Pembayaran</span>
+                <a href="#" class="text-primary">Cek Tutorial</a>
+            </div>
+        </div>
+        <i class="fa-regular fa-circle-check"></i>
+        <input type="text" readonly value="Belum dibayar" id="statusPaid" />
+    </div>
+    
+
+    <!-- Div element where QR code will be generated -->
+    <input type="hidden" value="@Model.payment.qrString" id="qrPayment" />
+    <input type="hidden" value="@Model.data.id" id="trxId" />
+    
+}
+else
+{
+    <p>Detail transaksi tidak ditemukan atau gagal diambil.</p>
+}
+
+<script src="https://davidshimjs.github.io/qrcodejs/qrcode.min.js"></script>
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+<script src="~/javascript/historyDetail.js"></script>
+<script>
+    // Topik yang akan di-subscribe 
+    
+    var trxId = document.getElementById("trxId").value;
+    var topic = 'trxid' + trxId;  // Ganti dengan topik yang sesuai
+</script>

@@ -1,0 +1,74 @@
+﻿@model List<PedagangPulsa.Web.Controllers.OperatorDto>
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Transaksi - Pulsa";
+}
+
+<h2>Transaksi - Pulsa</h2>
+
+<!-- Input Nomor HP -->
+<div class="form-group">
+    <label for="phoneNumber">Nomor HP</label>
+    <input type="text" id="phoneNumber" placeholder="Masukkan Nomor HP" />
+    <label for="operator">Operator</label>
+    <select id="operator">
+        @if (Model != null && Model.Count > 0)
+        {
+            @foreach (var operatorData in Model)
+            {
+                <option value="@operatorData.operator_Id">@operatorData.provider (@operatorData.jml_Active)</option>
+            }
+        }
+    </select>
+    <label for="">Operator</label>
+
+    <select id="metodeBayar">
+        <option value="2">QRIS (konfirmasi otomatis)</option>
+        <option value="1">Saldo Akun (proses cepat + dapet koin)</option>
+        <option value="3">Transfer Gopay (konfirmasi manual)</option>
+        <option value="4">Transfer BRI (konfirmasi manual)</option>
+        <option value="5">Transfer Jago (konfirmasi manual)</option>
+    </select>
+</div>
+
+<!-- Daftar Produk -->
+<div id="productList"></div>
+
+<!-- Modal Pop-up -->
+<div class="modal" id="productModal">
+    <div class="modal-content">
+        <span class="close" id="closeModal">&times;</span>
+        <h3>Rincian</h3>
+        <table>
+            <tr>
+                <td>Jenis Produk:</td>
+                <td id="productType"></td>
+            </tr>
+            <tr>
+                <td>Produk:</td>
+                <td id="productName"></td>
+            </tr>
+            <tr>
+                <td>Keterangan:</td>
+                <td id="provider"></td>
+            </tr>
+            <tr>
+                <td>Harga:</td>
+                <td id="productPrice"></td>
+            </tr>
+            <tr>
+                <td>Nomor HP:</td>
+                <td id="productPhone"></td>
+            </tr>
+        </table>
+        <div class="modal-footer">
+            <div id="payWithSaldo">
+                <span>Saldo Akun</span> <span id="accountBalance">Rp 5.350</span>
+            </div>
+            <button id="buyNowButton">Beli Sekarang</button>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/javascript/order.js"></script>

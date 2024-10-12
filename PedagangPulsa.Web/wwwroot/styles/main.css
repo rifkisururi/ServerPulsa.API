@@ -1,0 +1,79 @@
+:root {
+    --primary-color: #293540;
+    --secondary-color: #38424c;
+}
+
+/* Body padding to prevent overlap with bottom bar */
+body {
+    margin: 0;
+    padding-bottom: 60px;
+    padding-top: 60px;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.mobile-wrapper {
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.mobile-container {
+    width: 100vh;
+    max-width: 575px;
+    display: flex;
+    flex: 1;
+    padding: 8px;
+    flex-direction: column;
+}
+
+
+.header-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--primary-color);
+    display: flex;
+    z-index: 10;
+    justify-content: space-between;
+    padding: 20px;
+    color: white;
+}
+
+/* Bottom navigation bar */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--primary-color);
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    color: white;
+}
+
+.bottom-nav a {
+    color: white;
+    font-size: 18px;
+    text-align: center;
+    flex: 1;
+    text-decoration: none;
+}
+
+.bottom-nav a:hover,
+i:hover {
+    color: gray;
+}
+
+.bottom-nav a i {
+    display: block;
+    font-size: 22px;
+}
+
+#qrcode {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

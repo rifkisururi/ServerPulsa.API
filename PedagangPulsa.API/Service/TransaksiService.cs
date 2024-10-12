@@ -59,8 +59,8 @@ namespace PedagangPulsa.API.Service
 
                 // Menggunakan Dapper untuk menjalankan query
                 var result = await connection.QueryFirstOrDefaultAsync<Transaksi>(query, new { Id = dt.trx_id });
-                string sign = CreateSign(result.kode, result.no_tujuan, result.Id.ToString(), _DflashId, _DflashPin, _DflashPwd);
-                var request = new HttpRequestMessage(HttpMethod.Get, $"{_DflashEndPont}trx?memberID={_DflashId}&product={result.kode}&dest={result.no_tujuan}&refID={result.Id.ToString()}&sign={sign}");
+                string sign = CreateSign(result.kode, result.no_tujuan, result.id.ToString(), _DflashId, _DflashPin, _DflashPwd);
+                var request = new HttpRequestMessage(HttpMethod.Get, $"{_DflashEndPont}trx?memberID={_DflashId}&product={result.kode}&dest={result.no_tujuan}&refID={result.id.ToString()}&sign={sign}");
                 request.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36");
 
                 var response = await _httpClient.SendAsync(request);
