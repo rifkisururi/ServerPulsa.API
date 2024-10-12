@@ -86,11 +86,11 @@ builder.Services.AddSingleton<MqttService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+//}
 
 // Membuat database secara otomatis jika belum ada
 using (var scope = app.Services.CreateScope())
