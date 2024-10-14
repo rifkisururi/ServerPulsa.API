@@ -45,12 +45,12 @@ namespace PedagangPulsa.API.Controllers
             }
         }
 
-        [HttpGet("syncFromFile/{path}")]
-        public async Task<IActionResult> syncFromFile(string path)
+        [HttpGet("syncFromFile/{fileName}")]
+        public async Task<IActionResult> syncFromFile(string fileName)
         {
             try
             {
-                await _produkService.SyncProdukFromFileAsync(path);
+                await _produkService.SyncProdukFromFileAsync(fileName);
                 return Ok(new { Message = "Data produk berhasil disinkronisasi" });
             }
             catch (Exception ex)

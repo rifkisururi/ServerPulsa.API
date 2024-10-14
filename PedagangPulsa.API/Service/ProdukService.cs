@@ -133,7 +133,7 @@ namespace PedagangPulsa.API.Service
             }
         }
 
-        public async Task SyncProdukFromFileAsync(string filePath)
+        public async Task SyncProdukFromFileAsync(string fileName)
         {
             var connection = _context.Database.GetDbConnection();
             if (connection.State == ConnectionState.Closed)
@@ -142,6 +142,7 @@ namespace PedagangPulsa.API.Service
             }
             try
             {
+                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "db", fileName);
                 string jsonContent = await File.ReadAllTextAsync(filePath);
                 
                 // Parse konten JSON

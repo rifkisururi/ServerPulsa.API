@@ -7,6 +7,6 @@ namespace PedagangPulsa.API.Interface
         Task SyncProdukAsync();
         Task<string> GetData();
         Task UpsertProdukAsync(DetailProduk produk);
-        Task SyncProdukFromFileAsync(string filePath);
+        Task SyncProdukFromFileAsync(string fileName);
     }
 }
