@@ -45,10 +45,30 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+var connectionString = builder.Configuration.GetConnectionString(builder.Configuration["DatabaseProvider"]);
+string dbProvider = builder.Configuration["DatabaseProvider"].ToString().ToLower() ; 
+if (dbProvider == "sqlite")
+{
+    builder.Services.AddDbContext<AppDbContext>(options =>
+        options.UseSqlite(connectionString));
+}
+else if (dbProvider == "mysql")
+{
+    builder.Services.AddDbContext<AppDbContext>(options =>
+        options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+}
+else if (dbProvider == "postgresql")
+{
+    builder.Services.AddDbContext<AppDbContext>(options =>
+        options.UseNpgsql(connectionString));
+}
 
-string db = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(db));
+
+//string db = builder.Configuration.GetConnectionString("DefaultConnection");
+//builder.Services.AddDbContext<AppDbContext>(options =>
+//    options.UseSqlite(db));
+
+
 
 var key = Encoding.ASCII.GetBytes("your_jwt_secret_key_hereyour_jwt_secret_key_here");
 
@@ -85,10 +105,18 @@ builder.Services.AddSingleton<MqttService>();
 
 var app = builder.Build();
 
+
+// Automatically apply migrations and create the database if it doesn't exist
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    dbContext.Database.Migrate(); // Apply any pending migrations
+}
+
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
 //{
-    app.UseSwagger();
+app.UseSwagger();
     app.UseSwaggerUI();
 //}
 

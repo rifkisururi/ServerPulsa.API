@@ -18,6 +18,9 @@ COPY . .
 WORKDIR "/src/PedagangPulsa.API"
 RUN dotnet build "./PedagangPulsa.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
+# Create a volume for the SQLite database
+VOLUME /app/db
+
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release

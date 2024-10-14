@@ -1,21 +1,29 @@
 ﻿using Dapper;
 using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
+using PedagangPulsa.API.Database;
+using PedagangPulsa.API.Database.Entity;
 using PedagangPulsa.API.Interface;
 using PedagangPulsa.API.Model;
+using System.Data;
 using System.Net;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace PedagangPulsa.API.Service
 {
     public class ProdukService : IProdukService
     {
-        private readonly string _connectionString;
+        //private readonly string _connectionString;
         private static readonly HttpClient _httpClient = new HttpClient();
 
+        private readonly AppDbContext _context;
 
-        public ProdukService(IConfiguration configuration)
+        public ProdukService(IConfiguration configuration, AppDbContext context)
         {
-            _connectionString = configuration.GetConnectionString("DefaultConnection");
+            //_connectionString = configuration.GetConnectionString("DefaultConnection");
+            _context = context;
         }
 
         // Sinkronisasi produk dari API eksternal
@@ -29,67 +37,95 @@ namespace PedagangPulsa.API.Service
 
             var response = await _httpClient.SendAsync(request);
             response.EnsureSuccessStatusCode();
-
-            Console.WriteLine(await response.Content.ReadAsStringAsync());
-
-
-            var jsonData = JArray.Parse(await response.Content.ReadAsStringAsync()); // Parse JSON
             
-            using (var connection = new SqliteConnection(_connectionString))
+            var connection = _context.Database.GetDbConnection();
+            if (connection.State == ConnectionState.Closed)
             {
                 connection.Open();
-                string queryDelete = @"DELETE from Produk where Vendor = 'DFLASH';";
-                connection.Execute(queryDelete);
+            }
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
 
-                foreach (var item in jsonData)
+            var jsonData = JArray.Parse(await response.Content.ReadAsStringAsync()); // Parse JSON
+
+            string queryDelete = @" DELETE from Produk;
+                                    DELETE from DetailProduk;
+                                    DELETE from KategoriProduk;";
+            await connection.ExecuteAsync(queryDelete);
+            foreach (var item in jsonData)
+            {
+                var kategoriProduk = new Database.Entity.KategoriProduk
                 {
-                    var provider = item["provider"].ToString();
-                    var kategori = item["kategori"].ToString();
+                    Provider = item["provider"].ToString(),
+                    Kategori = item["kategori"].ToString()
+                };
+                int kategoryId = 0;
 
-                    // Insert atau Update KategoriProduk
-                    var kategoriID = InsertOrUpdateKategori(connection, provider, kategori);
+                await _context.KategoriProduk.AddAsync(kategoriProduk);
+                await _context.SaveChangesAsync();  // Simpan perubahan ke database
+                                                    // Dapatkan ID dari entitas yang baru di-insert
+                var insertedId = kategoriProduk.KategoriID;
+                Console.WriteLine($"Inserted ID: {insertedId}");
+                kategoryId = kategoriProduk.KategoriID;
 
-                    foreach (var produk in item["data"])
+                List<Database.Entity.DetailProduk> listPd = new List<Database.Entity.DetailProduk>();
+
+                foreach (var produk in item["data"])
+                {
+                    var kode = produk["kode"].ToString();
+                    var nama = produk["nama"].ToString();
+                    var harga = int.Parse(produk["harga"].ToString());
+                    var status = int.Parse(produk["status"].ToString());
+
+                    var DetailProdukDflash = new Database.Entity.DetailProduk
                     {
-                        var kode = produk["kode"].ToString();
-                        var nama = produk["nama"].ToString();
-                        var harga = decimal.Parse(produk["harga"].ToString());
-                        var status = int.Parse(produk["status"].ToString());
-
-                        // Insert atau Update DetailProduk
-                        InsertOrUpdateProduk(connection, kategoriID, kode, nama, harga, status);
-                    }
+                        KategoriID = kategoryId,
+                        Harga = harga,
+                        Kode = kode,
+                        Nama = nama,
+                        Status = status == 1 ? true : false,
+                    };
+                    listPd.Add(DetailProdukDflash);
                 }
+                await _context.DetailProduk.AddRangeAsync(listPd);
+                await _context.SaveChangesAsync();
+            }
 
+
+            try
+            {
                 string queryInsert = @"
                 insert into Produk
                 SELECT 'DFLASH',Kode, kp.KategoriID , kp.Kategori , kp.Provider , dp.Nama , '', dp.Harga , dp.Status 
                 from 
-	                DetailProduk dp
-	                INNER JOIN KategoriProduk kp ON dp.KategoriID  = kp.KategoriID ";
-                connection.Execute(queryInsert);
-                connection.Close();
+                 DetailProduk dp
+                 INNER JOIN KategoriProduk kp ON dp.KategoriID  = kp.KategoriID ";
+                // Membuka koneksi jika belum terbuka
+                await connection.ExecuteAsync(queryInsert);
             }
-
-            
-
-
+            finally
+            {
+                // Menutup koneksi jika dibutuhkan (opsional, tergantung pada siklus hidup konteks)
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
+            }
         }
 
         // Insert atau Update manual produk
-        public async Task UpsertProdukAsync(DetailProduk produk)
+        public async Task UpsertProdukAsync(Model.DetailProduk produk)
         {
-            using (var connection = new SqliteConnection(_connectionString))
-            {
-                connection.Open();
+            //using (var connection = new SqliteConnection(_connectionString))
+            //{
+            //    connection.Open();
 
-                // Insert atau update produk
-                InsertOrUpdateProduk(connection, produk.KategoriID, produk.Kode, produk.Nama, produk.Harga, produk.Status);
+            //    // Insert atau update produk
+            //    InsertOrUpdateProduk(connection, produk.KategoriID, produk.Kode, produk.Nama, produk.Harga, produk.Status);
 
-                connection.Close();
-            }
+            //    connection.Close();
+            //}
 
-            await Task.CompletedTask;
+            //await Task.CompletedTask;
         }
 
         // Insert atau Update KategoriProduk
