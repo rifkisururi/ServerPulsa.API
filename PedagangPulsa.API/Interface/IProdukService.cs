@@ -5,6 +5,8 @@ namespace PedagangPulsa.API.Interface
     public interface IProdukService
     {
         Task SyncProdukAsync();
+        Task<string> GetData();
         Task UpsertProdukAsync(DetailProduk produk);
+        Task SyncProdukFromFileAsync(string filePath);
     }
 }

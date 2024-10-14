@@ -26,8 +26,7 @@ namespace PedagangPulsa.API.Service
             _context = context;
         }
 
-        // Sinkronisasi produk dari API eksternal
-        public async Task SyncProdukAsync()
+        public async Task<string> GetData()
         {
             var request = new HttpRequestMessage(HttpMethod.Get, "https://dflash.co.id/harga/pricelist_json2.php");
             request.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36");
@@ -37,7 +36,7 @@ namespace PedagangPulsa.API.Service
 
             var response = await _httpClient.SendAsync(request);
             response.EnsureSuccessStatusCode();
-            
+
             var connection = _context.Database.GetDbConnection();
             if (connection.State == ConnectionState.Closed)
             {
@@ -46,56 +45,155 @@ namespace PedagangPulsa.API.Service
             Console.WriteLine(await response.Content.ReadAsStringAsync());
 
             var jsonData = JArray.Parse(await response.Content.ReadAsStringAsync()); // Parse JSON
-
-            string queryDelete = @" DELETE from Produk;
-                                    DELETE from DetailProduk;
-                                    DELETE from KategoriProduk;";
-            await connection.ExecuteAsync(queryDelete);
-            foreach (var item in jsonData)
+            return jsonData.ToString();
+        }
+        // Sinkronisasi produk dari API eksternal
+        public async Task SyncProdukAsync()
+        {
+            var connection = _context.Database.GetDbConnection();
+            if (connection.State == ConnectionState.Closed)
             {
-                var kategoriProduk = new Database.Entity.KategoriProduk
-                {
-                    Provider = item["provider"].ToString(),
-                    Kategori = item["kategori"].ToString()
-                };
-                int kategoryId = 0;
-
-                await _context.KategoriProduk.AddAsync(kategoriProduk);
-                await _context.SaveChangesAsync();  // Simpan perubahan ke database
-                                                    // Dapatkan ID dari entitas yang baru di-insert
-                var insertedId = kategoriProduk.KategoriID;
-                Console.WriteLine($"Inserted ID: {insertedId}");
-                kategoryId = kategoriProduk.KategoriID;
-
-                List<Database.Entity.DetailProduk> listPd = new List<Database.Entity.DetailProduk>();
-
-                foreach (var produk in item["data"])
-                {
-                    var kode = produk["kode"].ToString();
-                    var nama = produk["nama"].ToString();
-                    var harga = int.Parse(produk["harga"].ToString());
-                    var status = int.Parse(produk["status"].ToString());
-
-                    var DetailProdukDflash = new Database.Entity.DetailProduk
-                    {
-                        KategoriID = kategoryId,
-                        Harga = harga,
-                        Kode = kode,
-                        Nama = nama,
-                        Status = status == 1 ? true : false,
-                    };
-                    listPd.Add(DetailProdukDflash);
-                }
-                await _context.DetailProduk.AddRangeAsync(listPd);
-                await _context.SaveChangesAsync();
+                connection.Open();
             }
-
-
             try
             {
+                var request = new HttpRequestMessage(HttpMethod.Get, "https://dflash.co.id/harga/pricelist_json2.php");
+                request.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36");
+
+                var content = new StringContent("", null, "text/plain");
+                request.Content = content;
+
+                var response = await _httpClient.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+            
+                
+                Console.WriteLine(await response.Content.ReadAsStringAsync());
+
+                var jsonData = JArray.Parse(await response.Content.ReadAsStringAsync()); // Parse JSON
+
+                string queryDelete = @" DELETE from Produk;
+                                        DELETE from DetailProduk;
+                                        DELETE from KategoriProduk;";
+                await connection.ExecuteAsync(queryDelete);
+                foreach (var item in jsonData)
+                {
+                    var kategoriProduk = new Database.Entity.KategoriProduk
+                    {
+                        Provider = item["provider"].ToString(),
+                        Kategori = item["kategori"].ToString()
+                    };
+                    int kategoryId = 0;
+
+                    await _context.KategoriProduk.AddAsync(kategoriProduk);
+                    await _context.SaveChangesAsync();  // Simpan perubahan ke database
+                                                        // Dapatkan ID dari entitas yang baru di-insert
+                    var insertedId = kategoriProduk.KategoriID;
+                    Console.WriteLine($"Inserted ID: {insertedId}");
+                    kategoryId = kategoriProduk.KategoriID;
+
+                    List<Database.Entity.DetailProduk> listPd = new List<Database.Entity.DetailProduk>();
+
+                    foreach (var produk in item["data"])
+                    {
+                        var kode = produk["kode"].ToString();
+                        var nama = produk["nama"].ToString();
+                        var harga = int.Parse(produk["harga"].ToString());
+                        var status = int.Parse(produk["status"].ToString());
+
+                        var DetailProdukDflash = new Database.Entity.DetailProduk
+                        {
+                            KategoriID = kategoryId,
+                            Harga = harga,
+                            Kode = kode,
+                            Nama = nama,
+                            Status = status == 1 ? true : false,
+                        };
+                        listPd.Add(DetailProdukDflash);
+                    }
+                    await _context.DetailProduk.AddRangeAsync(listPd);
+                    await _context.SaveChangesAsync();
+                }
+
                 string queryInsert = @"
                 insert into Produk
                 SELECT 'DFLASH',Kode, kp.KategoriID , kp.Kategori , kp.Provider , dp.Nama , '', dp.Harga , dp.Status 
+                from 
+                 DetailProduk dp
+                 INNER JOIN KategoriProduk kp ON dp.KategoriID  = kp.KategoriID ";
+                // Membuka koneksi jika belum terbuka
+                await connection.ExecuteAsync(queryInsert);
+            }
+            finally
+            {
+                // Menutup koneksi jika dibutuhkan (opsional, tergantung pada siklus hidup konteks)
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
+            }
+        }
+
+        public async Task SyncProdukFromFileAsync(string filePath)
+        {
+            var connection = _context.Database.GetDbConnection();
+            if (connection.State == ConnectionState.Closed)
+            {
+                connection.Open();
+            }
+            try
+            {
+                string jsonContent = await File.ReadAllTextAsync(filePath);
+                
+                // Parse konten JSON
+                var jsonData = JArray.Parse(jsonContent);
+
+                string queryDelete = @" DELETE from Produk;
+                                        DELETE from DetailProduk;
+                                        DELETE from KategoriProduk;";
+                
+                await connection.ExecuteAsync(queryDelete);
+                foreach (var item in jsonData)
+                {
+                    var kategoriProduk = new Database.Entity.KategoriProduk
+                    {
+                        Provider = item["provider"].ToString(),
+                        Kategori = item["kategori"].ToString()
+                    };
+                    int kategoryId = 0;
+
+                    await _context.KategoriProduk.AddAsync(kategoriProduk);
+                    await _context.SaveChangesAsync();  // Simpan perubahan ke database
+                                                        // Dapatkan ID dari entitas yang baru di-insert
+                    var insertedId = kategoriProduk.KategoriID;
+                    Console.WriteLine($"Inserted ID: {insertedId}");
+                    kategoryId = kategoriProduk.KategoriID;
+
+                    List<Database.Entity.DetailProduk> listPd = new List<Database.Entity.DetailProduk>();
+
+                    foreach (var produk in item["data"])
+                    {
+                        var kode = produk["kode"].ToString();
+                        var nama = produk["nama"].ToString();
+                        var harga = int.Parse(produk["harga"].ToString());
+                        var status = int.Parse(produk["status"].ToString());
+
+                        var DetailProdukDflash = new Database.Entity.DetailProduk
+                        {
+                            KategoriID = kategoryId,
+                            Harga = harga,
+                            Kode = kode,
+                            Nama = nama,
+                            Status = status == 1 ? true : false,
+                        };
+                        listPd.Add(DetailProdukDflash);
+                    }
+                    await _context.DetailProduk.AddRangeAsync(listPd);
+                    await _context.SaveChangesAsync();
+                }
+
+                string queryInsert = @"
+                insert into Produk (Vendor, kode, Harga, Kategory, Provider, Status, deskripsi_produk, kategory_Id, nama_produk)
+                SELECT 'DFLASH',Kode, dp.Harga ,kp.Kategori ,kp.Provider ,  dp.Status , '', kp.KategoriID ,  dp.Nama 
                 from 
                  DetailProduk dp
                  INNER JOIN KategoriProduk kp ON dp.KategoriID  = kp.KategoriID ";

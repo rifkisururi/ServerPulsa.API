@@ -31,6 +31,34 @@ namespace PedagangPulsa.API.Controllers
             }
         }
 
+        [HttpGet("getProduk")]
+        public async Task<IActionResult> getProduk()
+        {
+            try
+            {
+                var data = await _produkService.GetData();
+                return Ok(new { Message = "Data produk berhasil disinkronisasi", data = data });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Terjadi kesalahan", Error = ex.Message });
+            }
+        }
+
+        [HttpGet("syncFromFile/{path}")]
+        public async Task<IActionResult> syncFromFile(string path)
+        {
+            try
+            {
+                await _produkService.SyncProdukFromFileAsync(path);
+                return Ok(new { Message = "Data produk berhasil disinkronisasi" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Terjadi kesalahan", Error = ex.Message });
+            }
+        }
+
         // Endpoint untuk insert/update produk manual
         [HttpPost("upsert")]
         public async Task<IActionResult> UpsertProduk([FromBody] DetailProduk produk)
