@@ -29,9 +29,10 @@ namespace PedagangPulsa.API.Controllers
         private readonly ITransaksiService _trxSvc;
         private readonly IDuitkuService _duitkuService; 
         private readonly ILogger<TransaksiController> _logger; 
-        private readonly MqttService _mqttService;
+        private readonly MqttService _mqttService; 
+        private readonly IConfiguration _configuration;
 
-        public TransaksiController(IProdukService produkService, AppDbContext context, TokenService tokenService, ITransaksiService trxSvc, IDuitkuService duitkuService, ILogger<TransaksiController> logger, MqttService mqttService)
+        public TransaksiController(IProdukService produkService, AppDbContext context, TokenService tokenService, ITransaksiService trxSvc, IDuitkuService duitkuService, ILogger<TransaksiController> logger, MqttService mqttService, IConfiguration configuration)
         {
             _produkService = produkService;
             _connectionString = context.Database.GetDbConnection().ConnectionString; // Ambil connection string dari context
@@ -41,6 +42,7 @@ namespace PedagangPulsa.API.Controllers
             _duitkuService = duitkuService;
             _logger = logger; 
             _mqttService = mqttService;
+            _configuration = configuration;
 
         }
 
@@ -215,10 +217,10 @@ namespace PedagangPulsa.API.Controllers
         }
 
 
-        [HttpGet("mqtt/{message}")]
-        public async Task<IActionResult> mqtt(string message)
+        [HttpGet("mqtt/{message}/{id}")]
+        public async Task<IActionResult> mqtt(string message, string id)
         {
-            string topic = "trxid7";
+            string topic = "trxid"+id;
             await _mqttService.PublishMessageAsync(topic, message);
 
             return Ok(new { Status = "Message Published", Topic = topic, Message = message });
@@ -248,7 +250,8 @@ namespace PedagangPulsa.API.Controllers
                 // Success - Process the successful transaction
                 _logger.LogInformation($"Transaction successful for MerchantOrderId: {callbackRequest.merchantOrderId}");
                 OrderSumit model = new OrderSumit();
-                model.trx_id = Convert.ToInt16(callbackRequest.merchantOrderId.Replace("PP", ""));
+                string prefix = _configuration["Duitku:prefix"] + DateTime.Now.ToString("yyMM");
+                model.trx_id = Convert.ToInt16(callbackRequest.merchantOrderId.Replace(prefix, ""));
 
                 string topic = "trxid"+ model.trx_id;  // Ganti dengan topik yang sesuai
                 string message = "paid";
