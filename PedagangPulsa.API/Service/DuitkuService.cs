@@ -28,7 +28,7 @@ namespace PedagangPulsa.API.Service
             _paymentMethod  = _configuration["Duitku:paymentMethod"];
             _callback       = _configuration["Duitku:callbackUrl"];
             _returnUrl = _configuration["Duitku:returnUrl"];
-            _prefixTrx = _configuration["Duitku:prefix"];
+            _prefixTrx = _configuration["Duitku:prefix"]+ DateTime.Now.ToString("yyMM");
         }
 
         public async Task<DuitkuInquiryResponse> CreatePaymentRequestAsync(DuitkuPaymentRequest request)
