@@ -1,4 +1,4 @@
-document.getElementById('lunas').style.display = 'none';
+// document.getElementById('lunas').style.display = 'none';
 // Create a new QRCode instance and attach it to the "qrcode" div
 var qr = document.getElementById("qrPayment").value;
 var qrcode = new QRCode(document.getElementById("qrcode"), {
@@ -9,6 +9,20 @@ var qrcode = new QRCode(document.getElementById("qrcode"), {
     colorLight: "#ffffff",        // Warna latar belakang
     correctLevel: QRCode.CorrectLevel.H  // Tingkat koreksi error (L, M, Q, H)
 });
+function downloadQr() {
+    // Ambil elemen kanvas dari QR Code
+    var qrCanvas = document.querySelector("#qrcode canvas");
+
+    if (qrCanvas) {
+        // Buat link download
+        var downloadLink = document.createElement("a");
+        downloadLink.href = qrCanvas.toDataURL("image/png");  // Konversi kanvas ke URL gambar PNG
+        downloadLink.download = "QRCode.png";  // Nama file download
+        downloadLink.click();  // Trigger klik untuk memulai download
+    } else {
+        alert("QR code tidak tersedia!");
+    }
+}
 
 const client = mqtt.connect('wss://4f022b608d8849cc922c9c2b5e113148.s1.eu.hivemq.cloud:8884/mqtt', {
     username: 'hivemq.webclient.1728711517267',
