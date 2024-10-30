@@ -30,11 +30,16 @@ jobs:
       run: echo "DATETIME=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
 
     # Step 4: Build the Docker image with datetime tag
-    - name: Build Docker image
+    - name: Build Docker image API
       run: |
         docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/pedagangpulsa:${{ env.DATETIME }} -f PedagangPulsa.API/Dockerfile .
+    
+    # Step 5: Build the Docker image with datetime tag
+    - name: Build Docker image WEB
+      run: |
+        docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/pedagangpulsaweb:${{ env.DATETIME }} -f PedagangPulsa.Web/Dockerfile .
 
-    # Step 5: Push Docker image to Docker Hub
+    # Step 6: Push Docker image to Docker Hub
     - name: Push Docker image
       run: |
         docker push ${{ secrets.DOCKERHUB_USERNAME }}/pedagangpulsa:${{ env.DATETIME }}
