@@ -1,7 +1,4 @@
-:root {
-    --primary-color: #293540;
-    --secondary-color: #38424c;
-}
+@import url("colors.css");
 
 /* Body padding to prevent overlap with bottom bar */
 body {
@@ -33,13 +30,20 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    background-color: var(--primary-color);
+    background-color: var(--primary);
     display: flex;
+    align-items: center;
     z-index: 10;
+    padding: 20px 20px 20px 20px;
+    color: var(--white);
     justify-content: space-between;
-    padding: 20px;
-    color: white;
 }
+
+.header-nav i {
+    margin-left: -40px; /* Adjust this value if needed */
+    cursor: pointer; /* Ensure the icon indicates interactivity */
+}
+
 
 /* Bottom navigation bar */
 .bottom-nav {
@@ -47,15 +51,15 @@ body {
     bottom: 0;
     left: 0;
     width: 100%;
-    background-color: var(--primary-color);
+    background-color: var(--primary);
     display: flex;
     justify-content: space-around;
     padding: 10px 0;
-    color: white;
+    color: var(--white);
 }
 
 .bottom-nav a {
-    color: white;
+    color: var(--white);
     font-size: 18px;
     text-align: center;
     flex: 1;
@@ -64,7 +68,7 @@ body {
 
 .bottom-nav a:hover,
 i:hover {
-    color: gray;
+    color: var(--hover-button);
 }
 
 .bottom-nav a i {

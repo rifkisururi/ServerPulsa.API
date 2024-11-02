@@ -1,7 +1,9 @@
-/* Custom styles */
+@import url("configs/app.css");
+@import url("configs/colors.css");
+
 .offcanvas-header {
-    background-color: #343a40;
-    color: white;
+    background-color: var(--primary);
+    color: var(--white);
 }
 
 .offcanvas-body {
@@ -14,7 +16,7 @@
 
 .offcanvas-body .nav-link {
     font-size: 16px;
-    color: #000;
+    color: var(--black);
 }
 
 .offcanvas-body .nav-link i {
@@ -27,13 +29,13 @@
     justify-content: space-between;
     align-items: center;
     padding: 10px;
-    background-color: var(--primary-color);
-    color: white;
+    background-color: var(--primary);
+    color: var(--white);
 }
 
 .balance-section {
-    color: white;
-    background-color: var(--primary-color);
+    color: var(--white);
+    background-color: var(--primary);
 }
 
 
@@ -63,7 +65,7 @@
 }
 
 .navbar-dark .navbar-toggler {
-    border-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--black);
 }
 
 .icon-categories {

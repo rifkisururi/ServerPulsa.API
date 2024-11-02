@@ -1,0 +1,46 @@
+﻿@model PedagangPulsa.Web.Controllers.TransaksiDetailResponse
+
+@{
+    ViewData["Title"] = "History";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Riwayat Transaksi</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+    <link href="~/styles/history.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="header-nav">
+        <span>Riwayat Transaksi (Umum)</span>
+        <i class="fas fa-search" onclick="openSearchPopup()">Cari . . .</i>
+    </div>
+    <div class="mobile-wrapper">
+        <div class="mobile-container">
+            <div class="transaction-list" id="transaction-list">
+                <!-- Transactions will be injected here -->
+            </div>
+
+            <!-- Pop-up Pencarian -->
+            <div class="search-popup" id="search-popup">
+                <div class="search-popup-content">
+                    <span class="close-popup" onclick="closeSearchPopup()">&times;</span>
+                    <input type="text"
+                           class="search-input form-control"
+                           id="search-input"
+                           placeholder="Cari transaksi..."
+                           oninput="searchTransactions()" />
+                    <div id="search-results"></div>
+                </div>
+            </div>
+
+            @{
+                Layout = "_LayoutMenuFooter";
+            }
+        </div>
+    </div>
+    <script src="~/javascript/history.js"></script>
+</body>
+</html>

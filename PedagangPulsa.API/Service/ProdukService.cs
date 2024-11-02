@@ -22,7 +22,6 @@ namespace PedagangPulsa.API.Service
 
         public ProdukService(IConfiguration configuration, AppDbContext context)
         {
-            //_connectionString = configuration.GetConnectionString("DefaultConnection");
             _context = context;
         }
 

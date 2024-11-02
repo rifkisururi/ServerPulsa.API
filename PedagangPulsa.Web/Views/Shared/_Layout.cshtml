@@ -13,8 +13,8 @@
 </head>
 <body>
     <div class="header-nav">
-        <a href="/index.html" class="navbar-brand">
-            <i class="fas fa-arrow-left"></i> Order
+        <a href="~/Home/Index" class="navbar-brand">
+            <i class="fas fa-arrow-left"></i> Home
         </a>
         <button class="btn-close btn-close-white"
                 onclick="window.location.href='/index.html'"></button>
@@ -23,6 +23,7 @@
         <div class="mobile-container">
             @* Anti-Forgery Token *@
             @Html.AntiForgeryToken()
+
             @RenderBody()
         </div>
     </div>

@@ -91,8 +91,6 @@ namespace PedagangPulsa.API.Service
                 respondUser.status = " " + jsonResponse.message;
                 respondUser.trx_id = dt.trx_id.ToString();
 
-               
-
                 query = @" update Transaksi set status_transaksi = @status, tanggal_konfirmasi = CURRENT_TIMESTAMP where Id = @Id;";
                 await connection.ExecuteAsync(query, new { Id = dt.trx_id, status = statusTrx });
 

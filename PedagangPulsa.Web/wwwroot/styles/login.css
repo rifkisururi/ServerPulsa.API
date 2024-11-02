@@ -1,9 +1,12 @@
+@import url("configs/app.css");
+@import url("configs/colors.css");
+
 body {
-    background-color: var(--primary-color);
+    background-color: var(--primary);
 }
 
 .card {
-    background-color: #fff;
+    background-color: var(--white);
     border: none;
     border-radius: 10px;
 }
@@ -13,23 +16,23 @@ h2 {
 }
 
 .btn-dark {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
+    background-color: var(--primary);
+    border-color: var(--primary);
 }
 
 .btn-outline-dark {
-    border-color: #fff;
+    border-color: var(--white);
 }
 
 .input-group-text {
     border: none;
-    background-color: #f8f9fa;
+    background-color: var(--white);
 }
 
 .form-control {
     border: none;
     border-radius: 0;
-    background-color: #f8f9fa;
+    background-color: var(--white);
     padding-left: 0;
 }
 

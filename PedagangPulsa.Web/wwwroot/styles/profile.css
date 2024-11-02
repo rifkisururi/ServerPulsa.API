@@ -1,77 +1,81 @@
- .header {
-     background-color: var(--primary-color);
-     color: white;
-     padding: 20px;
-     text-align: center;
-     position: relative;
- }
+@import url("configs/app.css");
+@import url("configs/colors.css");
 
- .header .edit-icon {
-     position: absolute;
-     top: 20px;
-     right: 20px;
-     cursor: pointer;
- }
 
- .header i {
-     font-size: 20px;
- }
+.header {
+    background-color: var(--primary);
+    color: var(--white);
+    padding: 20px;
+    text-align: center;
+    position: relative;
+}
 
- .header h3 {
-     margin: 10px 0 5px;
- }
+.header .edit-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+}
 
- .header p {
-     margin: 0;
-     font-size: 14px;
- }
+.header i {
+    font-size: 20px;
+}
 
- .tab-menu {
-     display: flex;
-     justify-content: space-between;
-     background-color: white;
-     padding: 10px 0;
- }
+.header h3 {
+    margin: 10px 0 5px;
+}
 
- .tab-menu div {
-     width: 50%;
-     text-align: center;
-     font-weight: bold;
-     cursor: pointer;
-     padding: 10px 0;
-     border-bottom: 3px solid transparent;
- }
+.header p {
+    margin: 0;
+    font-size: 14px;
+}
 
- .tab-menu div.active {
-     border-bottom: 3px solid #2c3e50;
- }
+.tab-menu {
+    display: flex;
+    justify-content: space-between;
+    background-color: var(--white);
+    padding: 10px 0;
+}
 
- .menu-list {
-     margin: 20px 0;
-     background-color: white;
- }
+.tab-menu div {
+    width: 50%;
+    text-align: center;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 10px 0;
+    border-bottom: 3px solid transparent;
+}
 
- .menu-item {
-     display: flex;
-     justify-content: space-between;
-     align-items: center;
-     padding: 15px;
-     border-bottom: 1px solid #f1f1f1;
-     cursor: pointer;
- }
+.tab-menu div.active {
+    border-bottom: 3px solid var(--primary);
+}
 
- .menu-item:hover {
-     background-color: #f1f1f1;
- }
+.menu-list {
+    margin: 20px 0;
+    background-color: var(--white);
+}
 
- .menu-item i {
-     margin-right: 15px;
- }
+.menu-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid var(--white);
+    cursor: pointer;
+}
 
- .menu-item span {
-     flex: 1;
- }
+.menu-item:hover {
+    background-color: var(--white);
+}
 
- .menu-item .switch {
-     font-size: 20px;
- }
+.menu-item i {
+    margin-right: 15px;
+}
+
+.menu-item span {
+    flex: 1;
+}
+
+.menu-item .switch {
+    font-size: 20px;
+}

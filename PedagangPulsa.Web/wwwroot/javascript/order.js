@@ -1,130 +1,100 @@
+// Data produk untuk demo
+const products = [
+  { name: "AXIS 5.000", provider: "AXIS", price: "Rp 5.930" },
+  { name: "AXIS 10.000", provider: "AXIS", price: "Rp 10.910" },
+  { name: "AXIS 15.000", provider: "AXIS", price: "Rp 15.075" },
+  { name: "AXIS 25.000", provider: "AXIS", price: "Rp 25.930" },
+  { name: "AXIS 50.000", provider: "AXIS", price: "Rp 51.000" },
+  { name: "AXIS 100.000", provider: "AXIS", price: "Rp 101.500" },
+
+  { name: "TELKOMSEL 5.000", provider: "TELKOMSEL", price: "Rp 5.930" },
+  { name: "TELKOMSEL 10.000", provider: "TELKOMSEL", price: "Rp 10.910" },
+  { name: "TELKOMSEL 15.000", provider: "TELKOMSEL", price: "Rp 15.075" },
+  { name: "TELKOMSEL 25.000", provider: "TELKOMSEL", price: "Rp 25.930" },
+  { name: "TELKOMSEL 50.000", provider: "TELKOMSEL", price: "Rp 50.930" },
+  { name: "TELKOMSEL 100.000", provider: "TELKOMSEL", price: "Rp 101.500" },
+
+  { name: "XL 5.000", provider: "XL", price: "Rp 5.930" },
+  { name: "XL 10.000", provider: "XL", price: "Rp 10.910" },
+  { name: "XL 15.000", provider: "XL", price: "Rp 15.075" },
+  { name: "XL 25.000", provider: "XL", price: "Rp 25.930" },
+  { name: "XL 50.000", provider: "XL", price: "Rp 50.930" },
+  { name: "XL 100.000", provider: "XL", price: "Rp 101.500" },
+
+  { name: "INDOSAT 5.000", provider: "INDOSAT", price: "Rp 5.930" },
+  { name: "INDOSAT 10.000", provider: "INDOSAT", price: "Rp 10.910" },
+  { name: "INDOSAT 15.000", provider: "INDOSAT", price: "Rp 15.075" },
+  { name: "INDOSAT 25.000", provider: "INDOSAT", price: "Rp 25.930" },
+  { name: "INDOSAT 50.000", provider: "INDOSAT", price: "Rp 50.930" },
+  { name: "INDOSAT 100.000", provider: "INDOSAT", price: "Rp 101.500" },
+
+  { name: "SMARTFREN 5.000", provider: "SMARTFREN", price: "Rp 5.930" },
+  { name: "SMARTFREN 10.000", provider: "SMARTFREN", price: "Rp 10.910" },
+  { name: "SMARTFREN 15.000", provider: "SMARTFREN", price: "Rp 15.075" },
+  { name: "SMARTFREN 25.000", provider: "SMARTFREN", price: "Rp 25.930" },
+  { name: "SMARTFREN 50.000", provider: "SMARTFREN", price: "Rp 50.930" },
+  { name: "SMARTFREN 100.000", provider: "SMARTFREN", price: "Rp 101.500" },
+];
+
 // Function untuk merender produk
 function renderProducts(products) {
-    const productList = document.getElementById("productList");
-    productList.innerHTML = "";
+  const productList = document.getElementById("productList");
+  productList.innerHTML = "";
 
-    products.forEach((product) => {
-        const productItem = document.createElement("div");
-        productItem.className = "product-item";
-        const formattedHarga = product.harga.toLocaleString('id-ID');
-
-        productItem.innerHTML = `
-            <h4>${product.nama_Produk}</h4>
-            <p>${product.kode} - ${product.deskripsi_produk}</p>
-            <p>${formattedHarga}</p>
+  products.forEach((product) => {
+    const productItem = document.createElement("div");
+    productItem.className = "product-item";
+    productItem.innerHTML = `
+            <h4>${product.name}</h4>
+            <p>${product.provider}</p>
+            <p>${product.price}</p>
         `;
 
-        // Event listener untuk membuka modal
-        productItem.addEventListener("click", function () {
-            showProductDetails(product);
-        });
-
-        productList.appendChild(productItem);
+    // Event listener untuk membuka modal
+    productItem.addEventListener("click", function () {
+      showProductDetails(product);
     });
+
+    productList.appendChild(productItem);
+  });
 }
-
-var productKode = "";
-var selectedOperator = "";
-
 
 // Function untuk menampilkan modal dengan detail produk
 function showProductDetails(product) {
-    document.getElementById("productType").innerText = "Pulsa";
-    document.getElementById("productName").innerText = product.kode + " " +product.nama_Produk;;
-    document.getElementById("provider").innerText = product.deskripsi_produk;
-    document.getElementById("productPrice").innerText = product.harga.toLocaleString('id-ID');;
-    document.getElementById("productPhone").innerText = document.getElementById("phoneNumber").value;
+  document.getElementById("productType").innerText = "Pulsa";
+  document.getElementById("provider").innerText = product.provider;
+  document.getElementById("productName").innerText = product.name;
+  document.getElementById("productPrice").innerText = product.price;
+  document.getElementById("productPhone").innerText = document.getElementById(
+    "phoneNumber"
+  ).value = "08334343434";
 
-    const modal = document.getElementById("productModal");
-    modal.style.display = "block";
-
-    if (document.getElementById("metodeBayar").value != 1) 
-        document.getElementById("payWithSaldo").hidden = true;
-    else
-        document.getElementById("payWithSaldo").hidden = false;
-
-    productKode = product.kode;
+  const modal = document.getElementById("productModal");
+  modal.style.display = "block";
 }
-
-
-
-
-async function sendPaymentRequest() {
-    // Data yang akan dikirim ke backend
-    const paymentRequest = {
-        operator_Id: selectedOperator,  // Ganti dengan operator ID yang sesuai
-        kode: productKode,    // Ganti dengan kode yang sesuai
-        no_tujuan: document.getElementById("phoneNumber").value  // Nomor tujuan dari input pengguna
-    };
-
-    try {
-        // Melakukan POST request ke endpoint /Payment
-        const response = await fetch('/Transaksi/Payment', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value // CSRF Token
-            },
-            body: JSON.stringify(paymentRequest)
-        });
-
-        const result = await response.json(); // Mendapatkan response dari server
-
-        if (result.success) {
-            console.log('Pembayaran berhasil, TRX ID:', result.trx_id);
-            window.location.href = "/Transaksi/History?id=" + result.trx_id;
-        } else {
-            console.log('Gagal memproses pembayaran:', result.message);
-            alert('Gagal memproses pembayaran: ' + result.message);
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Terjadi kesalahan dalam memproses pembayaran.');
-    }
-}
-
-
-
-// Close modal when clicked outside of it
-window.onclick = function (event) {
-    const modal = document.getElementById("productModal");
-    if (event.target == modal) {
-        modal.style.display = "none";
-    }
-};
-
-// Filter produk berdasarkan operator
-document.getElementById("operator").addEventListener("change", async function () {
-    selectedOperator = this.value;
-    console.log('selectedOperator:', selectedOperator);
-
-    // Get data from backend using fetch API (improved with async-await for cleaner code)
-    const url = "DetailProduk?operatorId=" + selectedOperator;
-    console.log('url', url);
-    try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error('Network response was not ok ' + response.statusText);
-        }
-        const products = await response.json(); // Assuming the response is JSON formatted
-        console.log('products', products.data);
-
-        // Render products
-        renderProducts(products.data);
-
-    } catch (error) {
-        console.error('There was a problem with the fetch operation:', error);
-    }
-});
-
 
 // Close modal function
 document.getElementById("closeModal").onclick = function () {
-    const modal = document.getElementById("productModal");
-    modal.style.display = "none";
+  const modal = document.getElementById("productModal");
+  modal.style.display = "none";
 };
 
-// Button Beli
-document.getElementById("buyNowButton").onclick = function () {
-    sendPaymentRequest();
+// Close modal when clicked outside of it
+window.onclick = function (event) {
+  const modal = document.getElementById("productModal");
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
 };
+
+// Filter produk berdasarkan operator
+document.getElementById("operator").addEventListener("change", function () {
+  const selectedOperator = this.value;
+  const filteredProducts = products.filter(
+    (product) => product.provider === selectedOperator
+  );
+  renderProducts(filteredProducts);
+});
+
+// Render produk awal
+renderProducts(products);

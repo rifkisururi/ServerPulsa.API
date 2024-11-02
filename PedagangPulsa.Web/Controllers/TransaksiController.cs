@@ -163,7 +163,6 @@ namespace PedagangPulsa.Web.Controllers
 
             return View(transaksiDetail);
         }
-
     }
 
     public class TransaksiDetailResponse
