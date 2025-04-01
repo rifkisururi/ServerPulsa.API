@@ -256,9 +256,8 @@ namespace PedagangPulsa.API.Controllers
                 string topic = "trxid"+ model.trx_id;  // Ganti dengan topik yang sesuai
                 string message = "paid";
                 await _mqttService.PublishMessageAsync(topic, message);
-
+                _trxSvc.SendTransaksi(model);
                 return Ok(new { Status = "Message Published", Topic = topic, Message = message });
-                //await _trxSvc.SendTransaksi(model);
             }
             else
             {
