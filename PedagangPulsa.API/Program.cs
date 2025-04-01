@@ -6,6 +6,7 @@ using PedagangPulsa.API.Database;
 using PedagangPulsa.API.Interface;
 using PedagangPulsa.API.Service;
 using System.Text;
+using System.Net; // Added for WebProxy and NetworkCredential
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -96,8 +97,18 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<IProdukService, ProdukService>();
-builder.Services.AddScoped<ITransaksiService ,TransaksiService>();
 builder.Services.AddScoped<IDuitkuService, DuitkuService>();
+// Configure HttpClient for DuitkuService with proxy
+builder.Services.AddHttpClient<ITransaksiService, TransaksiService>()
+    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+    {
+        Proxy = new WebProxy("http://proxy.rapidplex.com:3128")
+        {
+            Credentials = new NetworkCredential("user", "HostingYaDomiNesia")
+            // Removed incorrect UseProxy = true from here
+        },
+        UseProxy = true // Ensure the HttpClientHandler uses the proxy
+    });
 builder.Services.AddHttpClient<ProdukService>();
 
 // Tambahkan konfigurasi MQTT service
@@ -120,16 +131,6 @@ app.UseSwagger();
     app.UseSwaggerUI();
 //}
 
-// Membuat database secara otomatis jika belum ada
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-    // Pastikan bahwa database sudah ada, jika tidak akan dibuat
-    dbContext.Database.EnsureCreated();
-    // Alternatif menggunakan migrasi jika menggunakan migration (lebih dianjurkan untuk produksi)
-    // dbContext.Database.Migrate();
-}
 
 app.UseHttpsRedirection();
 

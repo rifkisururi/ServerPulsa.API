@@ -15,7 +15,7 @@ namespace PedagangPulsa.API.Service
     public class TransaksiService : ITransaksiService
     {
         private readonly string _connectionString;
-        private static readonly HttpClient _httpClient = new HttpClient();
+        private readonly HttpClient _httpClient;
         private string query;
 
         private string _DflashId;
@@ -23,15 +23,16 @@ namespace PedagangPulsa.API.Service
         private string _DflashPwd;
         private string _DflashEndPont;
 
-
-        public TransaksiService(IConfiguration configuration)
+        public TransaksiService(IConfiguration configuration, HttpClient httpClient)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
 
             _DflashId = "DS018842";
             _DflashPin = "8435";
             _DflashPwd = "MajuJaya";
-            _DflashEndPont = "http://api.dflash.co.id/";
+            _DflashEndPont = "http://api.dflash.co.id/"; 
+            _httpClient = httpClient;
+
         }
 
         public async Task<string> GetSaldo(string supliyer)
